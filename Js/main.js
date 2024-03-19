@@ -1,50 +1,54 @@
-function write (obj, sentence, i, cb) {
-  if (i != sentence.length) {
-    setTimeout(function () {
-      i++
-      console.log('in timeout', i)
-      obj.innerHTML = sentence.substr(0, i+1) +' <em aria-hidden="true"></em>';
-      write(obj, sentence, i, cb)
-    }, 50)
+function write(element, text, index, callback) {
+  if (!element || !text) {
+    console.error("Missing required parameters");
+    return;
+  }
+
+  if (index < text.length) {
+    setTimeout(() => {
+      index++;
+      element.innerHTML = text.substr(0, index) + '<em aria-hidden="true"></em>';
+      write(element, text, index, callback);
+    }, 50);
   } else {
-    console.log(i)
-    cb()
+    callback();
   }
 }
- function erase (obj, cb,i) {
- var sentence = obj.innerText
-    if (sentence.length != 0) {
-     setTimeout(function () {
-     sentence = sentence.substr(0,sentence.length-1)
-     console.log('in timeout', i)
-     obj.innerText = sentence
-     erase(obj, cb)
-      }, 10/(i*(i/10000000)))
-      } else {
-      obj.innerText = " "
-      cb()
-   }
+
+function erase(element, callback, index) {
+  if (!element) {
+    console.error("Missing required parameters");
+    return;
   }
-  var typeline = document.querySelector("#typeline")
 
-   function writeerase(obj, sentence, time, cb) {
-    write(obj, sentence, 0, function () {
-     setTimeout(function () {
-     erase(obj, cb) }, time) })
-     }
+  const text = element.innerText;
 
-var sentences = [
-  "is a custom rom. ",
-  "is based on crDroid. ",
-  "has different UI. ",
-  "has extra features. "
-]
-  
-var counter = 0
-function loop () {
-  var sentence = sentences[counter % sentences.length]
-  writeerase(typeline, sentence, 1500, loop)
-  counter++
+  if (text.length > 0) {
+    setTimeout(() => {
+      element.innerText = text.substr(0, text.length - 1);
+      erase(element, callback, index);
+    }, 10 / (index * (index / 10000000)));
+  } else {
+    element.innerText = " ";
+    callback();
+  }
 }
 
-loop()
+const typeline = document.querySelector("#typeline");
+
+if (!typeline) {
+  console.error("Could not find element with ID 'typeline'");
+  return;
+}
+
+function writeErase(element, text, delay, callback) {
+  write(element, text, 0, () => {
+    setTimeout(() => {
+      erase(element, callback);
+    }, delay);
+  });
+}
+
+const sentences = [
+  "is a custom ROM. ",
+  "is based on cr
